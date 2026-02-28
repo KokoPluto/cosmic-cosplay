@@ -223,23 +223,23 @@ export default function App() {
             </div>
           </div>
 
-          {/* Earth — someone pls fix this
+          {/* Earth — someone pls fix this */}
           <img
             src="/assets/backgrounds/earth.PNG"
             alt="earth"
             style={{
-              position: "fixed",
-              bottom: "-25vh",
-              left: "50%",
-              transform: "translateX(-50%)",
+              position: "absolute",
+              bottom: "-30%",
+              // left: "50%",
+              transform: "translateY(67%)",
               width: "100vw",
-              height: "50vh",
-              objectFit: "cover",
-              borderRadius: "50% 50% 0 0",
-              zIndex: 0,
+              // height: "50vh",
+              // objectFit: "cover",
+              // borderRadius: "50% 50% 0 0",
+              zIndex: -5,
               pointerEvents: "none",
             }}
-          /> */}
+          />
 
           {/* BG nav arrows */}
           <div style={{
