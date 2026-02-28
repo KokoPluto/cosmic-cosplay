@@ -55,6 +55,7 @@ export default function App() {
   const eyes    = usePartSelector("eyes",    "basic");
   const glasses = usePartSelector("glasses", "star");
   const hat     = usePartSelector("hat",     "party");
+  const [name, setName] = useState("NAME");
   const sceneRef = useRef();
 
   const exportImage = async () => {
@@ -193,18 +194,29 @@ export default function App() {
           position: "relative",
         }}>
 
-          {/* UFO + Name tag */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ fontSize: "64px", lineHeight: 1 }}>🛸</div>
-            <div style={{
-              background: "linear-gradient(90deg, #5b8cff, #7b6fff)",
-              borderRadius: "20px", padding: "6px 24px",
-              fontSize: "13px", fontWeight: 700, letterSpacing: "0.2em",
-              border: "2px solid rgba(255,255,255,0.3)", marginTop: "-8px",
-            }}>
-              NAME
-            </div>
-          </div>
+        {/* UFO + Name tag */}
+        <div style={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        alignItems: "center",
+        position: "relative",  
+        zIndex: 10,            
+        }}>
+        <div style={{ fontSize: "64px", lineHeight: 1 }}>🛸</div>
+        <input
+          value={name}
+          onChange={e => setName(e.target.value)}
+          maxLength={12}
+          style={{
+            background: "linear-gradient(90deg, #5b8cff, #7b6fff)",
+            borderRadius: "20px", padding: "6px 24px",
+            fontSize: "13px", fontWeight: 700, letterSpacing: "0.2em",
+            border: "2px solid rgba(255,255,255,0.3)", marginTop: "-8px",
+            color: "white", textAlign: "center", outline: "none",
+            width: "140px", cursor: "text",
+          }}
+        />
+      </div>
 
           {/* Beam */}
           <div style={{
@@ -218,8 +230,8 @@ export default function App() {
           
           <div style={{
             position: "relative",
-            width: "275px",   // 500 * 0.55
-            height: "330px",  // 600 * 0.55
+            width: "275px",   
+            height: "330px",  
             marginTop: "-180px",
           }}>
             <div style={{
