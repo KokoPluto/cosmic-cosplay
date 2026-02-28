@@ -64,6 +64,7 @@ export default function App() {
 
   const [name, setName] = useState("NAME");
   const [bgIdx, setBgIdx] = useState(0);
+  const [capturing, setCapturing] = useState(false);
   const sceneRef = useRef();
 
   const prevBg = () => setBgIdx(i => (i - 1 + BACKGROUNDS.length) % BACKGROUNDS.length);
@@ -71,12 +72,18 @@ export default function App() {
   const currentBg = BACKGROUNDS[bgIdx];
 
   const exportImage = async () => {
+    setCapturing(true);
+    await new Promise(r => setTimeout(r, 50));
     const canvas = await html2canvas(sceneRef.current, { backgroundColor: null, scale: 2 });
+    setCapturing(false);
     window.open(canvas.toDataURL("image/png"), "_blank");
   };
 
   const saveImage = async () => {
+   setCapturing(true);
+    await new Promise(r => setTimeout(r, 50));
     const canvas = await html2canvas(sceneRef.current, { backgroundColor: null, scale: 2 });
+    setCapturing(false);
     const a = document.createElement("a");
     a.href = canvas.toDataURL("image/png");
     a.download = `cosmic-cosplay-${Date.now()}.png`;
@@ -95,215 +102,181 @@ export default function App() {
   ];
 
   return (
+  <div ref={sceneRef} style={{
+    minHeight: "100vh",
+    backgroundImage: currentBg.image,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    color: "white",
+    fontFamily: "monospace",
+    position: "relative",
+    overflow: "hidden",
+  }}>
+
+    {/* Stars */}
+    {[...Array(40)].map((_, i) => (
+      <div key={i} style={{
+        position: "absolute",
+        left: `${(Math.sin(i * 137.5) * 0.5 + 0.5) * 100}%`,
+        top:  `${(Math.cos(i * 97.3)  * 0.5 + 0.5) * 100}%`,
+        width:  i % 5 === 0 ? "6px" : "3px",
+        height: i % 5 === 0 ? "6px" : "3px",
+        background: "white",
+        borderRadius: "50%",
+        opacity: 0.3 + (i % 4) * 0.15,
+        pointerEvents: "none",
+      }}/>
+    ))}
+
+    {/* Title */}
+    <header style={{ textAlign: "center", padding: "28px 20px 12px", position: "relative", zIndex: 1 }}>
+      <h1 style={{
+        fontSize: "clamp(28px, 6vw, 56px)",
+        fontWeight: 900,
+        letterSpacing: "0.15em",
+        color: "white",
+        margin: 0,
+        textShadow: "0 0 30px rgba(180,100,255,0.8)",
+        fontFamily: "Centauri, monospace",
+      }}>
+        ✦ COSMIC COSPLAY ✦
+      </h1>
+    </header>
+
+    {/* Main layout — 3 columns */}
     <div style={{
-      minHeight: "100vh",
-      backgroundImage: currentBg.image,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      color: "white",
-      fontFamily: "monospace",
+      display: "flex",
+      flexDirection: "row",
+      gap: "16px",
+      padding: "0 24px 24px",
+      maxWidth: "1200px",
+      margin: "0 auto",
       position: "relative",
-      overflow: "hidden",
+      zIndex: 1,
+      alignItems: "flex-start",
     }}>
 
-      {/* Stars */}
-      {[...Array(40)].map((_, i) => (
-        <div key={i} style={{
-          position: "absolute",
-          left: `${(Math.sin(i * 137.5) * 0.5 + 0.5) * 100}%`,
-          top:  `${(Math.cos(i * 97.3)  * 0.5 + 0.5) * 100}%`,
-          width:  i % 5 === 0 ? "6px" : "3px",
-          height: i % 5 === 0 ? "6px" : "3px",
-          background: "white",
-          borderRadius: "50%",
-          opacity: 0.3 + (i % 4) * 0.15,
-          pointerEvents: "none",
-        }}/>
-      ))}
-
-      {/* Title */}
-      <header style={{ textAlign: "center", padding: "28px 20px 12px", position: "relative", zIndex: 1 }}>
-        <h1 style={{
-          fontSize: "clamp(28px, 6vw, 56px)",
-          fontWeight: 900,
-          letterSpacing: "0.15em",
-          color: "white",
-          margin: 0,
-          textShadow: "0 0 30px rgba(180,100,255,0.8)",
-          fontFamily: "Centauri, monospace",
-        }}>
-          ✦ COSMIC COSPLAY ✦
-        </h1>
-      </header>
-
-      {/* Main layout */}
-      <div style={{
-        display: "flex",
-        gap: "16px",
-        padding: "0 24px 24px",
-        maxWidth: "1200px",
-        margin: "0 auto",
-        position: "relative",
-        zIndex: 1,
-        alignItems: "flex-start",
-      }}>
-
-        {/* Left panel */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "220px", flexShrink: 0 }}>
-
-          {/* Share + Name */}
-          <div style={panelStyle}>
-            <p style={labelStyle}>Share!</p>
-            <div style={{ background: "rgba(100,150,255,0.2)", borderRadius: "8px", padding: "8px", textAlign: "center", fontSize: "11px", color: "#a0c4ff" }}>
-              🌐 See what others made!
-            </div>
+      {/* Left panel */}
+      <div style={{ display: capturing ? "none" : "flex", flexDirection: "column", gap: "12px", width: "280px", flexShrink: 0 }}>
+        <div style={panelStyle}>
+          <p style={labelStyle}>Share!</p>
+          <div style={{ background: "rgba(100,150,255,0.2)", borderRadius: "8px", padding: "8px", textAlign: "center", fontSize: "11px", color: "#a0c4ff" }}>
+            🌐 See what others made!
           </div>
-
-          {/* Image + Name */}
-          <div style={panelStyle}>
-            <p style={labelStyle}>Image</p>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <button onClick={exportImage} style={btnStyle}>📤 Export</button>
-              <button onClick={saveImage}   style={btnStyle}>💾 Save</button>
-            </div>
-            <input
-              value={name}
-              onChange={e => setName(e.target.value)}
-              maxLength={12}
-              style={{
-                background: "linear-gradient(90deg, #5b8cff, #7b6fff)",
-                borderRadius: "20px", padding: "6px 24px",
-                fontSize: "13px", fontWeight: 700, letterSpacing: "0.2em",
-                border: "2px solid rgba(255,255,255,0.3)", marginTop: "8px",
-                color: "white", textAlign: "center", outline: "none",
-                width: "100%", cursor: "text", boxSizing: "border-box",
-              }}
-            />
-          </div>
-
         </div>
-        
-
-        {/* Center scene */}
-        <div ref={sceneRef} style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minHeight: "500px",
-          position: "relative",
-        }}>
-          {/* Spaceship */}
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 10 }}>
-            <img src="/assets/backgrounds/spaceship.PNG" alt="spaceship" style={{ width: "550px", height: "300px", objectFit: "contain" }} />
-            
+        <div style={panelStyle}>
+          <p style={labelStyle}>Image</p>
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button onClick={exportImage} style={btnStyle}>📤 Export</button>
+            <button onClick={saveImage}   style={btnStyle}>💾 Save</button>
           </div>
-
-          {/* Beam */}
-          <div style={{
-            width: "200px",
-            height: "220px",
-            background: "linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 100%)",
-            clipPath: "polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%)",
-            filter: "blur(8px)",
-            marginTop: "-10px",
-          }}/>
-
-          {/* Alien layers */}
-          <div style={{ position: "relative", width: "275px", height: "330px", marginTop: "-300px" }}>
-            <div style={{ position: "absolute", width: "500px", height: "600px", transformOrigin: "top left", transform: "scale(0.55)" }}>
-              {wings.src   && <img src={wings.src}   alt="wings"   style={layer("translateY(100px)")}    />}
-              {tail.src    && <img src={tail.src}    alt="tail"    style={layer("translate(115px,150px)")}/>}
-              {body.src    && <img src={body.src}    alt="body"    style={layer("translateY(90px)")}      />}
-              {ears.src    && <img src={ears.src}    alt="ears"    style={layer("translateY(-90px)")}     />}
-              {head.src    && <img src={head.src}    alt="head"    style={layer("translateY(-90px)")}     />}
-              {eyes.src    && <img src={eyes.src}    alt="eyes"    style={layer("translateY(-90px)")}     />}
-              {glasses.src && <img src={glasses.src} alt="glasses" style={layer("translateY(-15px)")}    />}
-              {hat.src     && <img src={hat.src}     alt="hat"     style={layer("translateY(-250px)")}   />}
-            </div>
-          </div>
-
-          {/* Earth — someone pls fix this
-          <img
-            src="/assets/backgrounds/earth.PNG"
-            alt="earth"
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            maxLength={12}
             style={{
-              position: "fixed",
-              bottom: "-25vh",
-              left: "50%",
-              transform: "translateX(-50%)",
-              width: "100vw",
-              height: "50vh",
-              objectFit: "cover",
-              borderRadius: "50% 50% 0 0",
-              zIndex: 0,
-              pointerEvents: "none",
+              background: "linear-gradient(90deg, #5b8cff, #7b6fff)",
+              borderRadius: "20px", padding: "6px 24px",
+              fontSize: "13px", fontWeight: 700, letterSpacing: "0.2em",
+              border: "2px solid rgba(255,255,255,0.3)", marginTop: "8px",
+              color: "white", textAlign: "center", outline: "none",
+              width: "100%", cursor: "text", boxSizing: "border-box",
             }}
-          /> */}
+          />
+        </div>
+      </div>
 
-          {/* BG nav arrows */}
-          <div style={{
-            position: "absolute", top: "50%", left: 0, right: 0,
-            display: "flex", justifyContent: "space-between",
-            pointerEvents: "none",
-          }}>
-            <button onClick={prevBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❮❮</button>
-            <button onClick={nextBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❯❯</button>
+      {/* Center scene */}
+      <div style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        minHeight: "500px",
+        position: "relative",
+      }}>
+        {/* Spaceship */}
+        <img src="/assets/backgrounds/spaceship.PNG" alt="spaceship" style={{ width: "550px", height: "300px", objectFit: "contain", position: "relative", zIndex: 10 }} />
+
+        {/* Beam */}
+        <div style={{
+          width: "200px",
+          height: "220px",
+          background: "linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 100%)",
+          clipPath: "polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%)",
+          filter: "blur(8px)",
+          marginTop: "-10px",
+        }}/>
+
+        {/* Alien layers */}
+        <div style={{ position: "relative", width: "300px", height: "430px", marginTop: "-300px" }}>
+          <div style={{ position: "absolute", width: "500px", height: "700px", transformOrigin: "top left", transform: "scale(0.55)" }}>
+            {wings.src   && <img src={wings.src}   alt="wings"   style={layer("translateY(100px)")}     />}
+            {tail.src    && <img src={tail.src}    alt="tail"    style={layer("translate(115px,150px)")} />}
+            {body.src    && <img src={body.src}    alt="body"    style={layer("translateY(90px)")}       />}
+            {ears.src    && <img src={ears.src}    alt="ears"    style={layer("translateY(-90px)")}      />}
+            {head.src    && <img src={head.src}    alt="head"    style={layer("translateY(-90px)")}      />}
+            {eyes.src    && <img src={eyes.src}    alt="eyes"    style={layer("translateY(-90px)")}      />}
+            {glasses.src && <img src={glasses.src} alt="glasses" style={layer("translateY(-15px)")}     />}
+            {hat.src     && <img src={hat.src}     alt="hat"     style={layer("translateY(-250px)")}    />}
           </div>
         </div>
 
-        {/* Right panel — visual grid */}
+        {/* BG nav arrows */}
         <div style={{
-          width: "240px",
-          flexShrink: 0,
-          ...panelStyle,
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
+          position: "absolute", top: "50%", left: 0, right: 0,
+          display: "flex", justifyContent: "space-between",
+          pointerEvents: "none",
         }}>
-          <p style={labelStyle}>Character</p>
-
-          {parts.map(({ label, part, key }) => (
-            <div key={key}>
-              <span style={{ fontSize: "9px", color: "#a0c4ff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                {label}
-              </span>
-              <div style={{ display: "flex", gap: "4px", marginTop: "4px", flexWrap: "wrap" }}>
-                {part.options.map((opt, i) => {
-                  const src = PARTS[key][opt];
-                  const isSelected = part.idx === i;
-                  return (
-                    <button
-                      key={opt}
-                      onClick={() => part.set(i)}
-                      title={opt}
-                      style={{
-                        width: "48px", height: "48px",
-                        borderRadius: "8px",
-                        border: isSelected ? "2px solid #a0c4ff" : "1px solid rgba(150,180,255,0.25)",
-                        background: isSelected ? "rgba(100,150,255,0.35)" : "rgba(100,130,255,0.1)",
-                        cursor: "pointer",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        overflow: "hidden",
-                        padding: 0,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {src
-                        ? <img src={src} alt={opt} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                        : <span style={{ fontSize: "16px", color: "rgba(160,196,255,0.5)" }}>✕</span>
-                      }
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+          <button onClick={prevBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❮❮</button>
+          <button onClick={nextBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❯❯</button>
         </div>
-
       </div>
+
+      {/* Right panel */}
+      <div style={{
+        width: "280px",
+        flexShrink: 0,
+        ...panelStyle,
+        display: capturing ? "none" : "flex",
+        flexDirection: "column",
+        gap: "8px",
+      }}>
+        <p style={labelStyle}>Character</p>
+        {parts.map(({ label, part, key }) => (
+          <div key={key}>
+            <span style={{ fontSize: "9px", color: "#a0c4ff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              {label}
+            </span>
+            <div style={{ display: "flex", gap: "4px", marginTop: "4px", flexWrap: "wrap" }}>
+              {part.options.map((opt, i) => {
+                const src = PARTS[key][opt];
+                const isSelected = part.idx === i;
+                return (
+                  <button key={opt} onClick={() => part.set(i)} title={opt} style={{
+                    width: "48px", height: "48px",
+                    borderRadius: "8px",
+                    border: isSelected ? "2px solid #a0c4ff" : "1px solid rgba(150,180,255,0.25)",
+                    background: isSelected ? "rgba(100,150,255,0.35)" : "rgba(100,130,255,0.1)",
+                    cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    overflow: "hidden", padding: 0, flexShrink: 0,
+                  }}>
+                    {src
+                      ? <img src={src} alt={opt} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                      : <span style={{ fontSize: "16px", color: "rgba(160,196,255,0.5)" }}>✕</span>
+                    }
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
     </div>
-  );
+  </div>
+);
 }
 
 const panelStyle = {
