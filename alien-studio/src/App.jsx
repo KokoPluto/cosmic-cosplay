@@ -224,14 +224,13 @@ export default function App() {
           </div>
 
           {/* Earth — someone pls fix this */}
-          <img
+          <img class ="rotating"
             src="/assets/backgrounds/earth.PNG"
             alt="earth"
             style={{
               position: "absolute",
-              bottom: "-30%",
+              bottom: "-137%",
               // left: "50%",
-              transform: "translateY(67%)",
               width: "100vw",
               // height: "50vh",
               // objectFit: "cover",
