@@ -32,6 +32,13 @@ const PARTS = {
     none:   null,
   },
 };
+const BACKGROUNDS = {
+  space:   "linear-gradient(160deg, #1a1040 0%, #2d1b6e 40%, #1a0a3d 70%, #3d1060 100%)",
+  nebula:  "linear-gradient(160deg, #0d0221 0%, #7c3aed 50%, #db2777 100%)",
+  arctic:  "linear-gradient(160deg, #0ea5e9 0%, #bae6fd 50%, #e0f2fe 100%)",
+  lava:    "linear-gradient(160deg, #1c0103 0%, #7f1d1d 40%, #f97316 100%)",
+  jungle:  "linear-gradient(160deg, #052e16 0%, #166534 50%, #15803d 100%)",
+};
 
 // helper
 function usePartSelector(part, initial) {
@@ -56,6 +63,7 @@ export default function App() {
   const glasses = usePartSelector("glasses", "star");
   const hat     = usePartSelector("hat",     "party");
   const [name, setName] = useState("NAME");
+  const [bg, setBg] = useState("space");
   const sceneRef = useRef();
 
   const exportImage = async () => {
@@ -81,7 +89,7 @@ export default function App() {
   return (
     <div style={{
       minHeight: "100vh",
-      background: "linear-gradient(160deg, #1a1040 0%, #2d1b6e 40%, #1a0a3d 70%, #3d1060 100%)",
+      background: BACKGROUNDS[bg],
       color: "white",
       fontFamily: "monospace",
       position: "relative",
@@ -180,6 +188,31 @@ export default function App() {
                 background: "rgba(100,150,255,0.2)",
                 color: "#a0c4ff", fontSize: "11px", cursor: "pointer",
               }}>💾 Save</button>
+            </div>
+          </div>
+          {/* Background */}
+          <div style={{
+            background: "rgba(150,180,255,0.15)",
+            border: "2px solid rgba(150,180,255,0.3)",
+            borderRadius: "12px",
+            padding: "12px",
+          }}>
+            <p style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: 700, color: "#a0c4ff" }}>Background</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {Object.keys(BACKGROUNDS).map(key => (
+                <button key={key} onClick={() => setBg(key)} style={{
+                  padding: "6px 10px",
+                  borderRadius: "8px",
+                  border: bg === key ? "2px solid #a0c4ff" : "1px solid rgba(150,180,255,0.3)",
+                  background: bg === key ? "rgba(100,150,255,0.3)" : "rgba(100,150,255,0.1)",
+                  color: bg === key ? "white" : "#a0c4ff",
+                  fontSize: "11px", fontWeight: 700,
+                  cursor: "pointer", textAlign: "left",
+                  textTransform: "capitalize",
+                }}>
+                  {key}
+                </button>
+              ))}
             </div>
           </div>
         </div>
