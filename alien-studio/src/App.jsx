@@ -27,33 +27,32 @@ const PARTS = {
     none: null,
   },
   hat: {
-    party:  "/assets/hats/hat_party.PNG",
-    crown:  "/assets/hats/hat_crown.PNG",  
-    none:   null,
+    party: "/assets/hats/hat_party.PNG",
+    crown: "/assets/hats/hat_crown.PNG",
+    none:  null,
   },
 };
-const BACKGROUNDS = {
-  space:   "linear-gradient(160deg, #1a1040 0%, #2d1b6e 40%, #1a0a3d 70%, #3d1060 100%)",
-  nebula:  "linear-gradient(160deg, #0d0221 0%, #7c3aed 50%, #db2777 100%)",
-  arctic:  "linear-gradient(160deg, #0ea5e9 0%, #bae6fd 50%, #e0f2fe 100%)",
-  lava:    "linear-gradient(160deg, #1c0103 0%, #7f1d1d 40%, #f97316 100%)",
-  jungle:  "linear-gradient(160deg, #052e16 0%, #166534 50%, #15803d 100%)",
-};
 
-// helper
+const BACKGROUNDS = [
+  { key: "space",  label: "Space",  image: "linear-gradient(160deg, #1a1040 0%, #2d1b6e 40%, #1a0a3d 70%, #3d1060 100%)" },
+  { key: "galaxy", label: "Galaxy", image: "url('/assets/backgrounds/galaxy_background.PNG')" },
+  { key: "nebula", label: "Nebula", image: "linear-gradient(160deg, #0d0221 0%, #7c3aed 50%, #db2777 100%)" },
+  //{ key: "arctic", label: "Arctic", image: "linear-gradient(160deg, #0ea5e9 0%, #bae6fd 50%, #e0f2fe 100%)" },
+  { key: "lava",   label: "Lava",   image: "linear-gradient(160deg, #1c0103 0%, #7f1d1d 40%, #f97316 100%)" },
+  { key: "jungle", label: "Jungle", image: "linear-gradient(160deg, #052e16 0%, #166534 50%, #15803d 100%)" },
+];
+
 function usePartSelector(part, initial) {
   const options = Object.keys(PARTS[part]);
   const [idx, setIdx] = useState(options.indexOf(initial));
   const prev = () => setIdx(i => (i - 1 + options.length) % options.length);
   const next = () => setIdx(i => (i + 1) % options.length);
   const value = options[idx];
-  const src   = PARTS[part][value];
-  return { value, src, prev, next };
+  const src = PARTS[part][value];
+  return { value, src, prev, next, set: setIdx, idx, options };
 }
 
 export default function App() {
-
-  //state for each part
   const wings   = usePartSelector("wings",   "basic");
   const tail    = usePartSelector("tail",    "pig");
   const body    = usePartSelector("body",    "green");
@@ -62,41 +61,52 @@ export default function App() {
   const eyes    = usePartSelector("eyes",    "basic");
   const glasses = usePartSelector("glasses", "star");
   const hat     = usePartSelector("hat",     "party");
+
   const [name, setName] = useState("NAME");
-  const [bg, setBg] = useState("space");
+  const [bgIdx, setBgIdx] = useState(0);
   const sceneRef = useRef();
 
+  const prevBg = () => setBgIdx(i => (i - 1 + BACKGROUNDS.length) % BACKGROUNDS.length);
+  const nextBg = () => setBgIdx(i => (i + 1) % BACKGROUNDS.length);
+  const currentBg = BACKGROUNDS[bgIdx];
+
   const exportImage = async () => {
-    const canvas = await html2canvas(sceneRef.current, {
-      backgroundColor: null,
-      scale: 2,
-    });
-    const url = canvas.toDataURL("image/png");
-    window.open(url, "_blank");
+    const canvas = await html2canvas(sceneRef.current, { backgroundColor: null, scale: 2 });
+    window.open(canvas.toDataURL("image/png"), "_blank");
   };
 
   const saveImage = async () => {
-    const canvas = await html2canvas(sceneRef.current, {
-      backgroundColor: null,
-      scale: 2,
-    });
-    const url = canvas.toDataURL("image/png");
+    const canvas = await html2canvas(sceneRef.current, { backgroundColor: null, scale: 2 });
     const a = document.createElement("a");
-    a.href = url;
+    a.href = canvas.toDataURL("image/png");
     a.download = `cosmic-cosplay-${Date.now()}.png`;
     a.click();
   };
+
+  const parts = [
+    { label: "Wings",   part: wings,   key: "wings"   },
+    { label: "Tail",    part: tail,    key: "tail"    },
+    { label: "Body",    part: body,    key: "body"    },
+    { label: "Ears",    part: ears,    key: "ears"    },
+    { label: "Head",    part: head,    key: "head"    },
+    { label: "Eyes",    part: eyes,    key: "eyes"    },
+    { label: "Glasses", part: glasses, key: "glasses" },
+    { label: "Hat",     part: hat,     key: "hat"     },
+  ];
+
   return (
     <div style={{
       minHeight: "100vh",
-      background: BACKGROUNDS[bg],
+      backgroundImage: currentBg.image,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
       color: "white",
       fontFamily: "monospace",
       position: "relative",
       overflow: "hidden",
     }}>
 
-      {/* stars */}
+      {/* Stars */}
       {[...Array(40)].map((_, i) => (
         <div key={i} style={{
           position: "absolute",
@@ -107,16 +117,12 @@ export default function App() {
           background: "white",
           borderRadius: "50%",
           opacity: 0.3 + (i % 4) * 0.15,
+          pointerEvents: "none",
         }}/>
       ))}
 
-      {/* title */}
-      <header style={{
-        textAlign: "center",
-        padding: "28px 20px 12px",
-        position: "relative",
-        zIndex: 1,
-      }}>
+      {/* Title */}
+      <header style={{ textAlign: "center", padding: "28px 20px 12px", position: "relative", zIndex: 1 }}>
         <h1 style={{
           fontSize: "clamp(28px, 6vw, 56px)",
           fontWeight: 900,
@@ -130,7 +136,7 @@ export default function App() {
         </h1>
       </header>
 
-      {/* main */}
+      {/* Main layout */}
       <div style={{
         display: "flex",
         gap: "16px",
@@ -142,82 +148,43 @@ export default function App() {
         alignItems: "flex-start",
       }}>
 
-        {/* L panel */}
-        <div style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "12px",
-          width: "160px",
-          flexShrink: 0,
-        }}>
+        {/* Left panel */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", width: "220px", flexShrink: 0 }}>
 
-          {/* Share */}
-          <div style={{
-            background: "rgba(150,180,255,0.15)",
-            border: "2px solid rgba(150,180,255,0.3)",
-            borderRadius: "12px",
-            padding: "12px",
-          }}>
-            <p style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: 700, color: "#a0c4ff" }}>Share!</p>
-            <div style={{
-              background: "rgba(100,150,255,0.2)", borderRadius: "8px",
-              padding: "8px", textAlign: "center", fontSize: "11px", color: "#a0c4ff",
-            }}>
+          {/* Share + Name */}
+          <div style={panelStyle}>
+            <p style={labelStyle}>Share!</p>
+            <div style={{ background: "rgba(100,150,255,0.2)", borderRadius: "8px", padding: "8px", textAlign: "center", fontSize: "11px", color: "#a0c4ff" }}>
               🌐 See what others made!
             </div>
           </div>
 
-          {/* Image */}
-          <div style={{
-            background: "rgba(150,180,255,0.15)",
-            border: "2px solid rgba(150,180,255,0.3)",
-            borderRadius: "12px",
-            padding: "12px",
-          }}>
-            <p style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: 700, color: "#a0c4ff" }}>Image</p>
+          {/* Image + Name */}
+          <div style={panelStyle}>
+            <p style={labelStyle}>Image</p>
             <div style={{ display: "flex", gap: "8px" }}>
-              <button onClick={exportImage} style={{
-                flex: 1, padding: "8px 4px", borderRadius: "8px",
-                border: "1px solid rgba(150,180,255,0.4)",
-                background: "rgba(100,150,255,0.2)",
-                color: "#a0c4ff", fontSize: "11px", cursor: "pointer",
-              }}>📤 Export</button>
-              <button onClick={saveImage} style={{
-                flex: 1, padding: "8px 4px", borderRadius: "8px",
-                border: "1px solid rgba(150,180,255,0.4)",
-                background: "rgba(100,150,255,0.2)",
-                color: "#a0c4ff", fontSize: "11px", cursor: "pointer",
-              }}>💾 Save</button>
+              <button onClick={exportImage} style={btnStyle}>📤 Export</button>
+              <button onClick={saveImage}   style={btnStyle}>💾 Save</button>
             </div>
+            <input
+              value={name}
+              onChange={e => setName(e.target.value)}
+              maxLength={12}
+              style={{
+                background: "linear-gradient(90deg, #5b8cff, #7b6fff)",
+                borderRadius: "20px", padding: "6px 24px",
+                fontSize: "13px", fontWeight: 700, letterSpacing: "0.2em",
+                border: "2px solid rgba(255,255,255,0.3)", marginTop: "8px",
+                color: "white", textAlign: "center", outline: "none",
+                width: "100%", cursor: "text", boxSizing: "border-box",
+              }}
+            />
           </div>
-          {/* Background */}
-          <div style={{
-            background: "rgba(150,180,255,0.15)",
-            border: "2px solid rgba(150,180,255,0.3)",
-            borderRadius: "12px",
-            padding: "12px",
-          }}>
-            <p style={{ margin: "0 0 8px", fontSize: "14px", fontWeight: 700, color: "#a0c4ff" }}>Background</p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              {Object.keys(BACKGROUNDS).map(key => (
-                <button key={key} onClick={() => setBg(key)} style={{
-                  padding: "6px 10px",
-                  borderRadius: "8px",
-                  border: bg === key ? "2px solid #a0c4ff" : "1px solid rgba(150,180,255,0.3)",
-                  background: bg === key ? "rgba(100,150,255,0.3)" : "rgba(100,150,255,0.1)",
-                  color: bg === key ? "white" : "#a0c4ff",
-                  fontSize: "11px", fontWeight: 700,
-                  cursor: "pointer", textAlign: "left",
-                  textTransform: "capitalize",
-                }}>
-                  {key}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
 
-        {/*Center */}
+        </div>
+        
+
+        {/* Center scene */}
         <div ref={sceneRef} style={{
           flex: 1,
           display: "flex",
@@ -226,190 +193,109 @@ export default function App() {
           minHeight: "500px",
           position: "relative",
         }}>
-
-        {/* UFO + Name tag */}
-        <div style={{ 
-        display: "flex", 
-        flexDirection: "column", 
-        alignItems: "center",
-        position: "relative",  
-        zIndex: 10,            
-        }}>
-        <div style={{ fontSize: "64px", lineHeight: 1 }}>🛸</div>
-        <input
-          value={name}
-          onChange={e => setName(e.target.value)}
-          maxLength={12}
-          style={{
-            background: "linear-gradient(90deg, #5b8cff, #7b6fff)",
-            borderRadius: "20px", padding: "6px 24px",
-            fontSize: "13px", fontWeight: 700, letterSpacing: "0.2em",
-            border: "2px solid rgba(255,255,255,0.3)", marginTop: "-8px",
-            color: "white", textAlign: "center", outline: "none",
-            width: "140px", cursor: "text",
-          }}
-        />
-      </div>
+          {/* Spaceship */}
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", zIndex: 10 }}>
+            <img src="/assets/backgrounds/spaceship.PNG" alt="spaceship" style={{ width: "550px", height: "300px", objectFit: "contain" }} />
+            
+          </div>
 
           {/* Beam */}
           <div style={{
-            width: 0, height: 0,
-            borderLeft: "100px solid transparent",
-            borderRight: "100px solid transparent",
-            borderTop: "220px solid rgba(255,255,255,0.1)",
+            width: "200px",
+            height: "220px",
+            background: "linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 100%)",
+            clipPath: "polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%)",
+            filter: "blur(8px)",
+            marginTop: "-10px",
           }}/>
 
-          {/* alien layers! */}
-          
-          <div style={{
-            position: "relative",
-            width: "275px",   
-            height: "330px",  
-            marginTop: "-180px",
-          }}>
-            <div style={{
-              position: "absolute",
-              width: "500px",
-              height: "600px",
-              transformOrigin: "top left",
-              transform: "scale(0.55)",
-            }}>
-
-              {/* WINGS */}
-              {wings.src && (
-                <img src={wings.src} alt="wings" style={{
-                  position: "absolute", width: "500px", height: "600px",
-                  top: 0, left: 0, transform: "translateY(100px)",
-                }}/>
-              )}
-
-              {/* TAIL */}
-              {tail.src && (
-                <img src={tail.src} alt="tail" style={{
-                  position: "absolute", width: "500px", height: "600px",
-                  top: 0, left: 0, transform: "translate(115px, 150px)",
-                }}/>
-              )}
-
-              {/* BODY */}
-              {body.src && (
-                <img src={body.src} alt="body" style={{
-                  position: "absolute", width: "500px", height: "600px",
-                  top: 0, left: 0, transform: "translateY(90px)",
-                }}/>
-              )}
-
-              {/* EARS */}
-              {ears.src && (
-                <img src={ears.src} alt="ears" style={{
-                  position: "absolute", width: "500px", height: "600px",
-                  top: 0, left: 0, transform: "translateY(-90px)",
-                }}/>
-              )}
-
-              {/* HEAD */}
-              {head.src && (
-                <img src={head.src} alt="head" style={{
-                  position: "absolute", width: "500px", height: "600px",
-                  top: 0, left: 0, transform: "translateY(-90px)",
-                }}/>
-              )}
-
-              {/* EYES */}
-              {eyes.src && (
-                <img src={eyes.src} alt="eyes" style={{
-                  position: "absolute", width: "500px", height: "600px",
-                  top: 0, left: 0, transform: "translateY(-90px)",
-                }}/>
-              )}
-
-              {/* GLASSES */}
-              {glasses.src && (
-                <img src={glasses.src} alt="glasses" style={{
-                  position: "absolute", width: "500px", height: "600px",
-                  top: 0, left: 0, transform: "translateY(-15px)",
-                }}/>
-              )}
-
-              {/* HAT */}
-              {hat.src && (
-                <img src={hat.src} alt="hat" style={{
-                  position: "absolute", width: "500px", height: "600px",
-                  top: 0, left: 0, transform: "translateY(-250px)",
-                }}/>
-              )}
-
+          {/* Alien layers */}
+          <div style={{ position: "relative", width: "275px", height: "330px", marginTop: "-300px" }}>
+            <div style={{ position: "absolute", width: "500px", height: "600px", transformOrigin: "top left", transform: "scale(0.55)" }}>
+              {wings.src   && <img src={wings.src}   alt="wings"   style={layer("translateY(100px)")}    />}
+              {tail.src    && <img src={tail.src}    alt="tail"    style={layer("translate(115px,150px)")}/>}
+              {body.src    && <img src={body.src}    alt="body"    style={layer("translateY(90px)")}      />}
+              {ears.src    && <img src={ears.src}    alt="ears"    style={layer("translateY(-90px)")}     />}
+              {head.src    && <img src={head.src}    alt="head"    style={layer("translateY(-90px)")}     />}
+              {eyes.src    && <img src={eyes.src}    alt="eyes"    style={layer("translateY(-90px)")}     />}
+              {glasses.src && <img src={glasses.src} alt="glasses" style={layer("translateY(-15px)")}    />}
+              {hat.src     && <img src={hat.src}     alt="hat"     style={layer("translateY(-250px)")}   />}
             </div>
           </div>
 
-          {/* Planet */}
-          <div style={{
-            width: "320px", height: "80px",
-            background: "linear-gradient(180deg, #4a7c3f, #2d5a27)",
-            borderRadius: "50%",
-            border: "3px solid rgba(100,200,100,0.3)",
-            marginTop: "8px",
-          }}/>
+          {/* Earth — someone pls fix this
+          <img
+            src="/assets/backgrounds/earth.PNG"
+            alt="earth"
+            style={{
+              position: "fixed",
+              bottom: "-25vh",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "100vw",
+              height: "50vh",
+              objectFit: "cover",
+              borderRadius: "50% 50% 0 0",
+              zIndex: 0,
+              pointerEvents: "none",
+            }}
+          /> */}
 
-          {/* Nav arrows */}
+          {/* BG nav arrows */}
           <div style={{
             position: "absolute", top: "50%", left: 0, right: 0,
             display: "flex", justifyContent: "space-between",
             pointerEvents: "none",
           }}>
-            <button style={{
-              background: "none", border: "none", color: "white",
-              fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7,
-            }}>❮❮</button>
-            <button style={{
-              background: "none", border: "none", color: "white",
-              fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7,
-            }}>❯❯</button>
+            <button onClick={prevBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❮❮</button>
+            <button onClick={nextBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❯❯</button>
           </div>
         </div>
 
-        {/*R panel */}
+        {/* Right panel — visual grid */}
         <div style={{
-          width: "220px",
-          background: "rgba(150,180,255,0.15)",
-          border: "2px solid rgba(150,180,255,0.3)",
-          borderRadius: "12px",
-          padding: "12px",
+          width: "240px",
           flexShrink: 0,
+          ...panelStyle,
           display: "flex",
           flexDirection: "column",
           gap: "8px",
         }}>
-          <p style={{ margin: "0 0 4px", fontSize: "14px", fontWeight: 700, color: "#a0c4ff" }}>
-            Character
-          </p>
+          <p style={labelStyle}>Character</p>
 
-          
-          {[
-            { label: "Wings",   part: wings   },
-            { label: "Tail",    part: tail    },
-            { label: "Body",    part: body    },
-            { label: "Ears",    part: ears    },
-            { label: "Head",    part: head    },
-            { label: "Eyes",    part: eyes    },
-            { label: "Glasses", part: glasses },
-            { label: "Hat",     part: hat     },
-          ].map(({ label, part }) => (
-            <div key={label} style={{
-              display: "flex", alignItems: "center",
-              justifyContent: "space-between",
-              background: "rgba(100,130,255,0.15)",
-              borderRadius: "8px", padding: "6px 8px",
-            }}>
-              <span style={{ fontSize: "10px", color: "#a0c4ff", fontWeight: 700, minWidth: "48px" }}>
+          {parts.map(({ label, part, key }) => (
+            <div key={key}>
+              <span style={{ fontSize: "9px", color: "#a0c4ff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
                 {label}
               </span>
-              <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                <button onClick={part.prev} style={arrowStyle}>‹</button>
-                <span style={{ fontSize: "9px", color: "white", minWidth: "36px", textAlign: "center" }}>
-                  {part.value}
-                </span>
-                <button onClick={part.next} style={arrowStyle}>›</button>
+              <div style={{ display: "flex", gap: "4px", marginTop: "4px", flexWrap: "wrap" }}>
+                {part.options.map((opt, i) => {
+                  const src = PARTS[key][opt];
+                  const isSelected = part.idx === i;
+                  return (
+                    <button
+                      key={opt}
+                      onClick={() => part.set(i)}
+                      title={opt}
+                      style={{
+                        width: "48px", height: "48px",
+                        borderRadius: "8px",
+                        border: isSelected ? "2px solid #a0c4ff" : "1px solid rgba(150,180,255,0.25)",
+                        background: isSelected ? "rgba(100,150,255,0.35)" : "rgba(100,130,255,0.1)",
+                        cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        overflow: "hidden",
+                        padding: 0,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {src
+                        ? <img src={src} alt={opt} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                        : <span style={{ fontSize: "16px", color: "rgba(160,196,255,0.5)" }}>✕</span>
+                      }
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -420,11 +306,27 @@ export default function App() {
   );
 }
 
-const arrowStyle = {
-  background: "rgba(255,255,255,0.1)",
-  border: "1px solid rgba(150,180,255,0.3)",
-  color: "white", width: "22px", height: "22px",
-  borderRadius: "6px", cursor: "pointer",
-  fontSize: "14px", display: "flex",
-  alignItems: "center", justifyContent: "center",
+const panelStyle = {
+  background: "rgba(150,180,255,0.15)",
+  border: "2px solid rgba(150,180,255,0.3)",
+  borderRadius: "12px",
+  padding: "12px",
 };
+
+const labelStyle = {
+  margin: "0 0 8px",
+  fontSize: "25px",
+  fontWeight: 700,
+  color: "#a0c4ff",
+};
+
+const btnStyle = {
+  flex: 1, padding: "8px 4px", borderRadius: "8px",
+  border: "1px solid rgba(150,180,255,0.4)",
+  background: "rgba(100,150,255,0.2)",
+  color: "#a0c4ff", fontSize: "11px", cursor: "pointer",
+};
+
+function layer(transform) {
+  return { position: "absolute", width: "500px", height: "600px", top: 0, left: 0, transform };
+}
