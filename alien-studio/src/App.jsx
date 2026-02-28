@@ -221,72 +221,88 @@ export default function App() {
             {hat.src     && <img src={hat.src}     alt="hat"     style={layer("translateY(-250px)")}    />}
           </div>
 
-          <img 
+          {/* Earth — someone pls fix this
+          <img
             src="/assets/backgrounds/earth.PNG"
             alt="earth"
             style={{
-              position: "absolute",
-              transform: "translate(0, 430px)",
+              position: "fixed",
+              bottom: "-25vh",
+              left: "50%",
+              transform: "translateX(-50%)",
               width: "100vw",
-              zIndex: -5,
+              height: "50vh",
+              objectFit: "cover",
+              borderRadius: "50% 50% 0 0",
+              zIndex: 0,
               pointerEvents: "none",
             }}
-          />
+          /> */}
 
-          
-
-        {/* BG nav arrows */}
-        <div style={{
-          position: "absolute", top: "50%", left: 0, right: 0,
-          display: "flex", justifyContent: "space-between",
-          pointerEvents: "none",
-        }}>
-          <button onClick={prevBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❮❮</button>
-          <button onClick={nextBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❯❯</button>
-      </div>
-
-      {/* Right panel */}
-  
-      <div style={{
-        width: "280px",
-        flexShrink: 0,
-        ...panelStyle,
-        display: capturing ? "none" : "flex",
-        flexDirection: "column",
-        gap: "8px",
-      }}>
-
-        <p style={labelStyle}>Character</p>
-        {parts.map(({ label, part, key }) => (
-          <div key={key}>
-            <span style={{ fontSize: "9px", color: "#a0c4ff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-              {label}
-            </span>
-            <div style={{ display: "flex", gap: "4px", marginTop: "4px", flexWrap: "wrap" }}>
-              {part.options.map((opt, i) => {
-                const src = PARTS[key][opt];
-                const isSelected = part.idx === i;
-                return (
-                  <button key={opt} onClick={() => part.set(i)} title={opt} style={{
-                    width: "48px", height: "48px",
-                    borderRadius: "8px",
-                    border: isSelected ? "2px solid #a0c4ff" : "1px solid rgba(150,180,255,0.25)",
-                    background: isSelected ? "rgba(100,150,255,0.35)" : "rgba(100,130,255,0.1)",
-                    cursor: "pointer",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    overflow: "hidden", padding: 0, flexShrink: 0,
-                  }}>
-                    {src
-                      ? <img src={src} alt={opt} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                      : <span style={{ fontSize: "16px", color: "rgba(160,196,255,0.5)" }}>✕</span>
-                    }
-                  </button>
-                );
-              })}
-            </div>
+          {/* BG nav arrows */}
+          <div style={{
+            position: "absolute", top: "50%", left: 0, right: 0,
+            display: "flex", justifyContent: "space-between",
+            pointerEvents: "none",
+          }}>
+            <button onClick={prevBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❮❮</button>
+            <button onClick={nextBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❯❯</button>
           </div>
-        ))}
+        </div>
+
+        {/* Right panel — visual grid */}
+        <div style={{
+          width: "240px",
+          flexShrink: 0,
+          ...panelStyle,
+          display: "flex",
+          flexDirection: "column",
+          gap: "8px",
+        }}>
+          <p style={labelStyle}>Character</p>
+
+          {parts.map(({ label, part, key }) => (
+            <div key={key}>
+              <span style={{ fontSize: "9px", color: "#a0c4ff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                {label}
+              </span>
+              <div style={{ display: "flex", gap: "4px", marginTop: "4px", flexWrap: "wrap" }}>
+                {part.options.map((opt, i) => {
+                  const src = PARTS[key][opt];
+                  const isSelected = part.idx === i;
+                  return (
+                    <button
+                      key={opt}
+                      onClick={() => part.set(i)}
+                      title={opt}
+                      style={{
+                        width: "48px", height: "48px",
+                        borderRadius: "8px",
+                        border: isSelected ? "2px solid #a0c4ff" : "1px solid rgba(150,180,255,0.25)",
+                        background: isSelected ? "rgba(100,150,255,0.35)" : "rgba(100,130,255,0.1)",
+                        cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        overflow: "hidden",
+                        padding: 0,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {src
+                        ? <img src={src} alt={opt} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                        : <span style={{ fontSize: "16px", color: "rgba(160,196,255,0.5)" }}>✕</span>
+                      }
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+
       </div>
+    </div>
+  );
+}
 
 const panelStyle = {
   background: "rgba(150,180,255,0.15)",
