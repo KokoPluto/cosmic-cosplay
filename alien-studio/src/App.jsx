@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
+import { useState, useRef, useEffect } from "react";
 
 const PARTS = {
   wings: {
@@ -66,6 +66,57 @@ export default function App() {
   const [bgIdx, setBgIdx] = useState(0);
   const [capturing, setCapturing] = useState(false);
   const sceneRef = useRef();
+  const [mouthOpen, setMouthOpen] = useState(false);
+  const audioCtxRef = useRef(null);
+  const streamRef = useRef(null);
+  const recorderRef = useRef(null);
+  const [recording, setRecording] = useState(false);
+
+  const startRecording = () => {
+    if (!streamRef.current) return;
+    const recorder = new MediaRecorder(streamRef.current);
+    recorderRef.current = recorder;
+    let chunks = [];
+    recorder.ondataavailable = e => chunks.push(e.data);
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: "audio/webm" });
+      if (blob.size < 5000) return;
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
+      audio.playbackRate = 1.5;
+      audio.preservesPitch = false;
+      audio.play();
+    };
+    recorder.start();
+    setRecording(true);
+  };
+
+  const stopRecording = () => {
+    recorderRef.current?.stop();
+    setRecording(false);
+  };
+
+  useEffect(() => {
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    const audioCtx = new AudioContext();
+    const analyser = audioCtx.createAnalyser();
+    const source = audioCtx.createMediaStreamSource(stream);
+    source.connect(analyser);
+    analyser.fftSize = 256;
+    const data = new Uint8Array(analyser.frequencyBinCount);
+
+    const tick = () => {
+      analyser.getByteFrequencyData(data);
+      const volume = data.reduce((a, b) => a + b) / data.length;
+      setMouthOpen(volume > 10);
+      requestAnimationFrame(tick);
+    };
+    tick();
+
+    // store stream for the record button to use
+    streamRef.current = stream;
+  });
+}, []);
 
   const prevBg = () => setBgIdx(i => (i - 1 + BACKGROUNDS.length) % BACKGROUNDS.length);
   const nextBg = () => setBgIdx(i => (i + 1) % BACKGROUNDS.length);
@@ -158,18 +209,42 @@ export default function App() {
 
       {/* Left panel */}
       <div style={{ display: capturing ? "none" : "flex", flexDirection: "column", gap: "12px", width: "280px", flexShrink: 0 }}>
+  
         <div style={panelStyle}>
           <p style={labelStyle}>Share!</p>
           <div style={{ background: "rgba(100,150,255,0.2)", borderRadius: "8px", padding: "8px", textAlign: "center", fontSize: "11px", color: "#a0c4ff" }}>
             🌐 See what others made!
           </div>
         </div>
+
         <div style={panelStyle}>
           <p style={labelStyle}>Image</p>
           <div style={{ display: "flex", gap: "8px" }}>
             <button onClick={exportImage} style={btnStyle}>📤 Export</button>
             <button onClick={saveImage}   style={btnStyle}>💾 Save</button>
           </div>
+        </div>
+
+        <div style={panelStyle}>
+          <p style={labelStyle}>Speak</p>
+          <button
+            onMouseDown={startRecording}
+            onMouseUp={stopRecording}
+            onTouchStart={startRecording}
+            onTouchEnd={stopRecording}
+            style={{
+              ...btnStyle,
+              width: "100%",
+              background: recording ? "rgba(255,80,80,0.4)" : "rgba(100,150,255,0.2)",
+              border: recording ? "1px solid rgba(255,80,80,0.6)" : "1px solid rgba(150,180,255,0.4)",
+            }}
+          >
+            {recording ? "🔴 Recording..." : "🎙️ Hold to Speak"}
+          </button>
+        </div>
+
+        <div style={panelStyle}>
+          <p style={labelStyle}>Name</p>
           <input
             value={name}
             onChange={e => setName(e.target.value)}
@@ -178,12 +253,13 @@ export default function App() {
               background: "linear-gradient(90deg, #5b8cff, #7b6fff)",
               borderRadius: "20px", padding: "6px 24px",
               fontSize: "13px", fontWeight: 700, letterSpacing: "0.2em",
-              border: "2px solid rgba(255,255,255,0.3)", marginTop: "8px",
+              border: "2px solid rgba(255,255,255,0.3)",
               color: "white", textAlign: "center", outline: "none",
               width: "100%", cursor: "text", boxSizing: "border-box",
             }}
           />
         </div>
+
       </div>
 
       {/* Center scene */}
@@ -217,6 +293,19 @@ export default function App() {
             {ears.src    && <img src={ears.src}    alt="ears"    style={layer("translateY(-90px)")}      />}
             {head.src    && <img src={head.src}    alt="head"    style={layer("translateY(-90px)")}      />}
             {eyes.src    && <img src={eyes.src}    alt="eyes"    style={layer("translateY(-90px)")}      />}
+            {/* Placeholder mouth */}
+            <div style={{
+              position: "absolute",
+              width: mouthOpen ? "40px" : "30px",
+              height: mouthOpen ? "20px" : "6px",
+              background: "#1a0a2e",
+              borderRadius: mouthOpen ? "0 0 20px 20px" : "4px",
+              top: mouthOpen ? "340px" : "348px",
+              left: "230px",
+              transition: "all 0.05s ease",
+              border: "2px solid black",
+            }}/>
+            
             {glasses.src && <img src={glasses.src} alt="glasses" style={layer("translateY(-15px)")}     />}
             {hat.src     && <img src={hat.src}     alt="hat"     style={layer("translateY(-250px)")}    />}
           </div>
