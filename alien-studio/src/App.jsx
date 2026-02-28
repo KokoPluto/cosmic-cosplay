@@ -229,7 +229,7 @@ export default function App() {
             alt="earth"
             style={{
               position: "absolute",
-              bottom: "-137%",
+              bottom: "-134%",
               // left: "50%",
               width: "100vw",
               // height: "50vh",

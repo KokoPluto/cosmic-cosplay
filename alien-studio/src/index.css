@@ -4,7 +4,7 @@
 }
 
 .rotating {
-   animation: rotate 50s linear infinite;
+   animation: rotate 67s linear infinite;
 }
 
 @keyframes rotate {
