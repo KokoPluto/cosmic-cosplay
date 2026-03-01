@@ -22,6 +22,13 @@ const PARTS = {
   },
   ears: {
     green: "/assets/ears/ears_basic_green.PNG",
+    green: "/assets/ears/ears_basic_green.PNG",
+    blue: "/assets/ears/ears_basic_blue.PNG",
+    cyan: "/assets/ears/ears_basic_cyan.PNG",
+    green: "/assets/ears/ears_basic_green.PNG",
+    pink: "/assets/ears/ears_basic_pink.PNG",
+    red: "/assets/ears/ears_basic_red.PNG",
+    yellow: "/assets/ears/ears_basic_yellow.PNG",
   },
   head: {
     green: "/assets/heads/head_basic_green.PNG",
