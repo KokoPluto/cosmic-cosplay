@@ -40,6 +40,15 @@ const PARTS = {
   },
   eyes: {
     basic: "/assets/eyes/eye_basic.PNG",
+    big: "/assets/eyes/eye_big.PNG",
+    dot: "/assets/eyes/eye_dot.PNG",
+    stressed: "/assets/eyes/eye_stressed.PNG",
+    brow : "/assets/eyes/eye_brow.PNG",
+    happy : "/assets/eyes/eye_happy.PNG",
+    robot : "/assets/eyes/eye_robot.PNG",
+    wonky: "/assets/eyes/eye_wonky.PNG",
+    blue : "/assets/eyes/eye_blue.PNG",
+    brown: "/assets/eyes/eye_brown.PNG",
   },
   glasses: {
     star: "/assets/accessories/glasses_star.PNG",
