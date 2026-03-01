@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import html2canvas from "html2canvas";
 
+
 const PARTS = {
   wings: {
     none: null,
@@ -77,14 +78,166 @@ function usePartSelector(part, initial) {
 }
 
 export default function App() {
-  const wings   = usePartSelector("wings",   "basic");
-  const tail    = usePartSelector("tail",    "pig");
+  const wings   = usePartSelector("wings",   "none");
+  const tail    = usePartSelector("tail",    "none");
   const body    = usePartSelector("body",    "green");
   const ears    = usePartSelector("ears",    "green");
   const head    = usePartSelector("head",    "green");
   const eyes    = usePartSelector("eyes",    "basic");
-  const glasses = usePartSelector("glasses", "star");
-  const hat     = usePartSelector("hat",     "party");
+  const glasses = usePartSelector("glasses", "none");
+  const hat     = usePartSelector("hat",     "none");
+
+  const [page, setPage] = useState("body");
+
+  function ItemGrid({ partObj, selector }) {
+  return (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(4, 1fr)",
+      gap: "8px",
+    }}>
+      {Object.entries(partObj).map(([key, src], i) => {
+        const selected = selector.idx === i;
+
+        return (
+          <div
+            key={key}
+            onClick={() => selector.set(i)}
+            style={{
+              width: "48px",
+              height: "48px",
+              borderRadius: "6px",
+
+              // ✅ SAME STYLE YOU USED BEFORE
+              border: selected
+                ? "2px solid white"
+                : "1px solid rgba(150,180,255,0.3)",
+
+              background: selected
+                ? "rgba(255,255,255,0.25)"
+                : "rgba(100,130,255,0.2)",
+
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+              cursor: "pointer",
+            }}
+          >
+            {src ? (
+              <img
+                src={src}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            ) : (
+              // ✅ NULL OPTION (X button)
+              <span style={{
+                fontSize: "16px",
+                color: "rgba(255,255,255,0.6)"
+              }}>
+                ✕
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+  function renderPage() {
+  if (page === "body") {
+    return (
+      <div>
+        <p style={labelStyle}>Body</p>
+        <ItemGrid partObj={PARTS.body} selector={body} />
+      </div>
+    );
+  }
+
+  if (page === "ears") {
+    return (
+      <div>
+        <p style={labelStyle}>Ears</p>
+        <ItemGrid partObj={PARTS.ears} selector={ears} />
+      </div>
+    );
+  }
+
+  if (page === "eyes") {
+    return (
+      <div>
+        <p style={labelStyle}>Eyes</p>
+        <ItemGrid partObj={PARTS.eyes} selector={eyes} />
+
+        <p style={{ fontSize: "12px", marginTop: "8px" }}>
+          Glasses
+        </p>
+        <ItemGrid partObj={PARTS.glasses} selector={glasses} />
+      </div>
+    );
+  }
+
+  if (page === "wings") {
+    return (
+      <div>
+        <p style={labelStyle}>Wings</p>
+        <ItemGrid partObj={PARTS.wings} selector={wings} />
+      </div>
+    );
+  }
+
+  if (page === "hat") {
+    return (
+      <div>
+        <p style={labelStyle}>Hat</p>
+        <ItemGrid partObj={PARTS.hat} selector={hat} />
+      </div>
+    );
+  }
+
+  if (page === "tail") {
+    return (
+      <div>
+        <p style={labelStyle}>Tail</p>
+        <ItemGrid partObj={PARTS.tail} selector={tail} />
+      </div>
+    );
+  }
+
+  return null;
+}
+
+function PageButton({ pageKey, emoji, page, setPage }) {
+  const selected = page === pageKey;
+
+  return (
+    <div
+      onClick={() => setPage(pageKey)}
+      style={{
+        fontSize: "24px",
+        cursor: "pointer",
+        textAlign: "center",
+        padding: "8px",
+        borderRadius: "10px",
+        background: selected
+          ? "rgba(255,255,255,0.2)"
+          : "transparent",
+        border: selected
+          ? "2px solid #fff"
+          : "2px solid transparent",
+        transition: "0.15s",
+      }}
+    >
+      {emoji}
+    </div>
+  );
+}
+
 
   const [name, setName] = useState("NAME");
   const [bgIdx, setBgIdx] = useState(0);
@@ -368,51 +521,69 @@ export default function App() {
             <button onClick={nextBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❯❯</button>
           </div>
         </div>
+        
 
         {/* Right panel */}
         <div style={{
-          width: "240px",
-          flexShrink: 0,
-          ...panelStyle,
-          display: capturing ? "none" : "flex",
-          flexDirection: "column",
-          gap: "8px",
-        }}>
-          <p style={labelStyle}>Character</p>
+  display: capturing ? "none" : "flex",
+  flexDirection: "row",
+  gap: "0px",
+   ...panelStyle, // 👈 THIS gives it the nice background
+  padding: "0",
+}}>
+{/* SIDE TABS */}
+  <div style={{
+    display: "flex",
+    flexDirection: "column",
+    gap: "10px",
+    padding: "10px 6px",
+    background: "rgba(80,100,200,0.25)",
+    borderRadius: "16px 0 0 16px",
+  }}>
+    {[
+      { key: "body", label: "🧍" },
+      { key: "ears", label: "👂" },
+      { key: "eyes", label: "👀" },
+      { key: "wings", label: "🪽" },
+      { key: "hat", label: "🎩" },
+      { key: "tail", label: "🐾" },
+    ].map(tab => {
+      const active = page === tab.key;
 
-          {parts.map(({ label, part, key }) => (
-            <div key={key} style={{
-              display: "flex", alignItems: "center",
-              justifyContent: "space-between",
-              background: "rgba(100,130,255,0.15)",
-              borderRadius: "8px", padding: "6px 8px",
-            }}>
-              <span style={{ fontSize: "10px", color: "#a0c4ff", fontWeight: 700, minWidth: "52px" }}>
-                {label}
-              </span>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <button onClick={part.prev} style={arrowStyle}>‹</button>
-                <div style={{
-                  width: "36px", height: "36px",
-                  borderRadius: "6px",
-                  border: "1px solid rgba(150,180,255,0.3)",
-                  background: "rgba(100,130,255,0.2)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  overflow: "hidden",
-                }}>
-                  {PARTS[key][part.value]
-                    ? <img src={PARTS[key][part.value]} alt={part.value} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                    : <span style={{ fontSize: "14px", color: "rgba(160,196,255,0.5)" }}>✕</span>
-                  }
-                </div>
-                <button onClick={part.next} style={arrowStyle}>›</button>
-              </div>
-            </div>
-          ))}
+      return (
+        <div
+          key={tab.key}
+          onClick={() => setPage(tab.key)}
+          style={{
+            width: "60px",
+            height: "60px",
+            borderRadius: "14px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+            fontSize: "28px",
+
+            background: active
+              ? "rgba(255,255,255,0.25)"
+              : "transparent",
+
+            border: active
+              ? "2px solid white"
+              : "2px solid transparent",
+
+            transition: "0.2s",
+          }}
+        >
+          {tab.label}
         </div>
-
+      );
+    })}
+  </div> 
+  {renderPage()}
       </div>
     </div>
+    </div> 
   );
 }
 
