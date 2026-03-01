@@ -13,6 +13,7 @@ const PARTS = {
   },
   body: {
     green: "/assets/bodies/body_basic_green.PNG",
+    cosmic: "/assets/bodies/body_basic_cosmic.PNG",
     blue: "/assets/bodies/body_basic_blue.PNG",
     cyan: "/assets/bodies/body_basic_cyan.PNG",
     green: "/assets/bodies/body_basic_green.PNG",
@@ -28,6 +29,7 @@ const PARTS = {
     pink: "/assets/ears/ears_basic_pink.PNG",
     red: "/assets/ears/ears_basic_red.PNG",
     yellow: "/assets/ears/ears_basic_yellow.PNG",
+    cosmic: "/assets/ears/ears_basic_cosmic.PNG",
   },
   head: {
     green: "/assets/heads/head_basic_green.PNG",
@@ -37,6 +39,7 @@ const PARTS = {
     pink: "/assets/heads/head_basic_pink.PNG",
     red: "/assets/heads/head_basic_red.PNG",
     yellow: "/assets/heads/head_basic_yellow.PNG",
+    cosmic: "/assets/heads/head_basic_cosmic.PNG",
   },
   eyes: {
     basic: "/assets/eyes/eye_basic.PNG",
