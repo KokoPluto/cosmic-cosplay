@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import html2canvas from "html2canvas";
 
+
 const PARTS = {
   wings: {
     basic: "/assets/accessories/wings_basic.PNG",
@@ -12,6 +13,12 @@ const PARTS = {
   },
   body: {
     green: "/assets/bodies/body_basic_green.PNG",
+    blue: "/assets/bodies/body_basic_blue.PNG",
+    cyan: "/assets/bodies/body_basic_cyan.PNG",
+    green: "/assets/bodies/body_basic_green.PNG",
+    pink: "/assets/bodies/body_basic_pink.PNG",
+    red: "/assets/bodies/body_basic_red.PNG",
+    yellow: "/assets/bodies/body_basic_yellow.PNG",
   },
   ears: {
     green: "/assets/ears/ears_basic_green.PNG",
