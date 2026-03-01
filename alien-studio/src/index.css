@@ -11,3 +11,26 @@
    from { transform: rotate(0deg); }
    to { transform: rotate(360deg); }
 }
+
+.floating {
+  /* width: 100px;
+  height: 100px;
+  background-color: lightblue;
+  border-radius: 50%;
+  position: relative; */
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}

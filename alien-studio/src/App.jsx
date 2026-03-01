@@ -37,7 +37,7 @@ const BACKGROUNDS = [
   { key: "space",  label: "Space",  image: "linear-gradient(160deg, #1a1040 0%, #2d1b6e 40%, #1a0a3d 70%, #3d1060 100%)" },
   { key: "galaxy", label: "Galaxy", image: "url('/assets/backgrounds/galaxy_background.PNG')" },
   { key: "nebula", label: "Nebula", image: "linear-gradient(160deg, #0d0221 0%, #7c3aed 50%, #db2777 100%)" },
-  //{ key: "arctic", label: "Arctic", image: "linear-gradient(160deg, #0ea5e9 0%, #bae6fd 50%, #e0f2fe 100%)" },
+  { key: "arctic", label: "Arctic", image: "linear-gradient(160deg, #0ea5e9 0%, #bae6fd 50%, #e0f2fe 100%)" },
   { key: "lava",   label: "Lava",   image: "linear-gradient(160deg, #1c0103 0%, #7f1d1d 40%, #f97316 100%)" },
   { key: "jungle", label: "Jungle", image: "linear-gradient(160deg, #052e16 0%, #166534 50%, #15803d 100%)" },
 ];
@@ -200,18 +200,19 @@ export default function App() {
             position: "absolute", 
             top: "0px",
             zIndex: 10 }}>
-            <img 
+            <img  class = "floating"
               src="/assets/backgrounds/spaceship.PNG" 
               alt="spaceship" 
               style={{ 
                 width: "550px", 
                 height: "300px", 
                 objectFit: "contain" 
+                
               }} />
           </div>
 
           {/* Beam */}
-          <div style={{
+          <div class = "floating" style={{
             position: "absolute",
             top: "150px",
             width: "200px",
