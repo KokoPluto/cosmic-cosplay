@@ -308,41 +308,35 @@ export default function App() {
           <p style={labelStyle}>Character</p>
 
           {parts.map(({ label, part, key }) => (
-            <div key={key}>
-              <span style={{ fontSize: "9px", color: "#a0c4ff", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em" }}>
-                {label}
-              </span>
-              <div style={{ display: "flex", gap: "4px", marginTop: "4px", flexWrap: "wrap" }}>
-                {part.options.map((opt, i) => {
-                  const src = PARTS[key][opt];
-                  const isSelected = part.idx === i;
-                  return (
-                    <button
-                      key={opt}
-                      onClick={() => part.set(i)}
-                      title={opt}
-                      style={{
-                        width: "48px", height: "48px",
-                        borderRadius: "8px",
-                        border: isSelected ? "2px solid #a0c4ff" : "1px solid rgba(150,180,255,0.25)",
-                        background: isSelected ? "rgba(100,150,255,0.35)" : "rgba(100,130,255,0.1)",
-                        cursor: "pointer",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        overflow: "hidden",
-                        padding: 0,
-                        flexShrink: 0,
-                      }}
-                    >
-                      {src
-                        ? <img src={src} alt={opt} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                        : <span style={{ fontSize: "16px", color: "rgba(160,196,255,0.5)" }}>✕</span>
-                      }
-                    </button>
-                  );
-                })}
+            <div key={key} style={{
+              display: "flex", alignItems: "center",
+              justifyContent: "space-between",
+              background: "rgba(100,130,255,0.15)",
+              borderRadius: "8px", padding: "6px 8px",
+            }}>
+            <span style={{ fontSize: "10px", color: "#a0c4ff", fontWeight: 700, minWidth: "52px" }}>
+              {label}
+            </span>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <button onClick={part.prev} style={arrowStyle}>‹</button>
+              {/* thumbnail of current option */}
+              <div style={{
+                width: "36px", height: "36px",
+                borderRadius: "6px",
+                border: "1px solid rgba(150,180,255,0.3)",
+                background: "rgba(100,130,255,0.2)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                overflow: "hidden",
+              }}>
+                {PARTS[key][part.value]
+                  ? <img src={PARTS[key][part.value]} alt={part.value} style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                  : <span style={{ fontSize: "14px", color: "rgba(160,196,255,0.5)" }}>✕</span>
+                }
               </div>
+              <button onClick={part.next} style={arrowStyle}>›</button>
             </div>
-          ))}
+          </div>
+        ))}
         </div>
 
       </div>
@@ -369,6 +363,14 @@ const btnStyle = {
   border: "1px solid rgba(150,180,255,0.4)",
   background: "rgba(100,150,255,0.2)",
   color: "#a0c4ff", fontSize: "11px", cursor: "pointer",
+};
+const arrowStyle = {
+  background: "rgba(255,255,255,0.1)",
+  border: "1px solid rgba(150,180,255,0.3)",
+  color: "white", width: "24px", height: "24px",
+  borderRadius: "6px", cursor: "pointer",
+  fontSize: "16px", display: "flex",
+  alignItems: "center", justifyContent: "center",
 };
 
 function layer(transform) {
