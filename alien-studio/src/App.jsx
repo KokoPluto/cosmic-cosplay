@@ -4,12 +4,12 @@ import html2canvas from "html2canvas";
 
 const PARTS = {
   wings: {
+    none: null,
     basic: "/assets/accessories/wings_basic.PNG",
-    none:  null,
   },
   tail: {
-    pig:  "/assets/accessories/tail_pig.PNG",
     none: null,
+    pig:  "/assets/accessories/tail_pig.PNG",
   },
   body: {
     green: "/assets/bodies/body_basic_green.PNG",
@@ -51,13 +51,13 @@ const PARTS = {
     brown: "/assets/eyes/eye_brown.PNG",
   },
   glasses: {
-    star: "/assets/accessories/glasses_star.PNG",
     none: null,
+    star: "/assets/accessories/glasses_star.PNG",
   },
   hat: {
+    none:  null,
     party: "/assets/hats/hat_party.PNG",
     crown: "/assets/hats/hat_crown.PNG",
-    none:  null,
   },
 };
 
