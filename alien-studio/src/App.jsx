@@ -52,11 +52,31 @@ const PARTS = {
     star: "/assets/accessories/glasses_star.PNG",
   },
   hat: {
-    none:  null,
+    none: null,
     party: "/assets/hats/hat_party.PNG",
     crown: "/assets/hats/hat_crown.PNG",
+    amongus: "/assets/hats/hat_amongus.PNG",
+    crown: "/assets/hats/hat_crown.PNG",
+    deer:"/assets/hats/hat_deer.PNG",
+    flower: "/assets/hats/hat_flower.PNG",
+    frog:"/assets/hats/hat_frog.PNG",
+    goose: "/assets/hats/hat_goose.PNG",
+    laptop:"/assets/hats/hat_laptop.PNG",
+    maple:"/assets/hats/hat_maple.PNG",
+    monster:"/assets/hats/hat_monster.PNG",
+    orange:"/assets/hats/hat_orange.PNG",
+    party:"/assets/hats/hat_party.PNG",
+    I: "/assets/hats/hat_I.PNG",
+    sanvi: "/assets/hats/hat_sanvi.PNG",
+    saturn:"/assets/hats/hat_saturn.PNG",
+    shock:"/assets/hats/hat_shock.PNG",
+    sock:"/assets/hats/hat_sock.PNG",
+    sun:"/assets/hats/hat_sun.PNG",
+    top:"/assets/hats/hat_top.PNG",
+     67: "/assets/hats/hat_67.PNG",
   },
 };
+
 
 const BACKGROUNDS = [
   { key: "space",  label: "Space",  image: "linear-gradient(160deg, #1a1040 0%, #2d1b6e 40%, #1a0a3d 70%, #3d1060 100%)" },
@@ -316,6 +336,15 @@ function PageButton({ pageKey, emoji, page, setPage }) {
     a.click();
   };
 
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+  const check = () => setIsMobile(window.innerWidth < 900);
+  check();
+  window.addEventListener("resize", check);
+  return () => window.removeEventListener("resize", check);
+}, []);
+
   const parts = [
     { label: "Wings",   part: wings,   key: "wings"   },
     { label: "Tail",    part: tail,    key: "tail"    },
@@ -371,30 +400,31 @@ function PageButton({ pageKey, emoji, page, setPage }) {
 
       {/* Main layout */}
       <div style={{
-        display: "flex",
-        gap: "16px",
-        padding: "0 24px 24px",
-        maxWidth: "1200px",
-        margin: "0 auto",
-        position: "relative",
-        zIndex: 1,
-        alignItems: "flex-start",
-      }}>
+  display: "flex",
+  flexDirection: isMobile ? "column" : "row",
+  gap: isMobile ? "28px" : "16px",
+  padding: isMobile ? "20px" : "40px 24px 24px",
+  maxWidth: "1200px",
+  margin: "0 auto",
+  position: "relative",
+  zIndex: 1,
+  alignItems: isMobile ? "center" : "flex-start",
+}}>
 
         {/* Left panel */}
-        <div style={{ display: capturing ? "none" : "flex", flexDirection: "column", gap: "12px", width: "220px", flexShrink: 0 }}>
-
+        <div style={{ display: capturing ? "none" : "flex", flexDirection: "column", gap: "12px", width: "220px", flexShrink: 0, order: isMobile ? 4 : 0,}}>
+{/* 
           <div style={panelStyle}>
             <p style={labelStyle}>Share!</p>
             <div style={{ background: "rgba(100,150,255,0.2)", borderRadius: "8px", padding: "8px", textAlign: "center", fontSize: "11px", color: "#a0c4ff" }}>
               🌐 See what others made!
             </div>
-          </div>
+          </div> */}
 
           <div style={panelStyle}>
             <p style={labelStyle}>Image</p>
             <div style={{ display: "flex", gap: "8px" }}>
-              <button onClick={exportImage} style={btnStyle}>📤 Export</button>
+              {/* <button onClick={exportImage} style={btnStyle}>📤 Export</button> */}
               <button onClick={saveImage}   style={btnStyle}>💾 Save</button>
             </div>
           </div>
@@ -438,34 +468,35 @@ function PageButton({ pageKey, emoji, page, setPage }) {
 
         {/* Center scene */}
         <div style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minHeight: "500px",
-          position: "relative",
-        }}>
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  minHeight: "500px",
+  position: "relative",
+  order: isMobile ? 1 : 0,
+}}>
           {/* Spaceship */}
           <div style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             position: "absolute",
-            top: "0px",
+            top: isMobile ? "-100px" : "0px",
             zIndex: 10,
           }}>
             <img className="floating"
               src="/assets/backgrounds/spaceship.PNG"
               alt="spaceship"
-              style={{ width: "550px", height: "300px", objectFit: "contain" }}
+              style={{width: isMobile ? "250px" : "550px", height: "300px", objectFit: "contain" }}
             />
           </div>
 
           {/* Beam */}
           <div className="floating" style={{
             position: "absolute",
-            top: "150px",
-            width: "200px",
+            top: isMobile ? "50px" : "150px",
+            width: isMobile ? "120px" : "200px",
             height: "220px",
             background: "linear-gradient(180deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 100%)",
             clipPath: "polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%)",
@@ -473,8 +504,14 @@ function PageButton({ pageKey, emoji, page, setPage }) {
           }}/>
 
           {/* Alien layers */}
-          <div style={{ position: "absolute", top: "200px", width: "275px", height: "330px" }}>
-            <div style={{ position: "absolute", width: "500px", height: "600px", transformOrigin: "top left", transform: "scale(0.55)" }}>
+          <div style={{
+  position: isMobile ? "relative" : "absolute",
+  top: isMobile ? "auto" : "200px",
+  marginTop: isMobile ? "40px" : 0,
+  width: "275px",
+  height: "330px",
+}}>
+            <div style={{ position: "absolute", width: "500px", height: "600px", transformOrigin: "top left", transform: isMobile ? "scale(0.45)" : "scale(0.55)" }}>
               {wings.src   && <img src={wings.src}   alt="wings"   style={layer("translateY(100px)")}     />}
               {tail.src    && <img src={tail.src}    alt="tail"    style={layer("translate(115px,150px)")} />}
               {body.src    && <img src={body.src}    alt="body"    style={layer("translateY(90px)")}       />}
@@ -483,7 +520,7 @@ function PageButton({ pageKey, emoji, page, setPage }) {
               {eyes.src    && <img src={eyes.src}    alt="eyes"    style={layer("translateY(-90px)")}      />}
 
               {/* Placeholder mouth */}
-              <div style={{
+              {/* <div style={{
                 position: "absolute",
                 width: mouthOpen ? "40px" : "30px",
                 height: mouthOpen ? "20px" : "6px",
@@ -493,10 +530,19 @@ function PageButton({ pageKey, emoji, page, setPage }) {
                 left: "230px",
                 transition: "all 0.05s ease",
                 border: "2px solid black",
-              }}/>
+              }}/> */}
 
               {glasses.src && <img src={glasses.src} alt="glasses" style={layer("translateY(-15px)")}     />}
-              {hat.src     && <img src={hat.src}     alt="hat"     style={layer("translateY(-250px)")}    />}
+             {hat.src && <img 
+  src={hat.src} 
+  alt="hat" 
+  style={{
+    ...layer("translateY(-250px)"),
+    transform: hat.value === "sanvi"
+      ? "translateY(-260px) scale(0.5)"  // move and scale sanvi
+      : "translateY(-250px)"             // default for other hats
+  }}
+/>}
             </div>
           </div>
 
@@ -515,10 +561,16 @@ function PageButton({ pageKey, emoji, page, setPage }) {
 
           {/* BG nav arrows */}
           <div style={{
-            position: "absolute", top: "50%", left: 0, right: 0,
-            display: "flex", justifyContent: "space-between",
-            pointerEvents: "none",
-          }}>
+  position: isMobile ? "relative" : "absolute",
+  top: isMobile ? "auto" : "50%",
+  marginTop: isMobile ? "20px" : 0,
+  left: 0,
+  right: 0,
+  display: "flex",
+  justifyContent: isMobile ? "center" : "space-between",
+  gap: isMobile ? "40px" : "0",
+  pointerEvents: "none",
+}}>
             <button onClick={prevBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❮❮</button>
             <button onClick={nextBg} style={{ background: "none", border: "none", color: "white", fontSize: "28px", cursor: "pointer", pointerEvents: "all", opacity: 0.7 }}>❯❯</button>
           </div>
@@ -530,7 +582,7 @@ function PageButton({ pageKey, emoji, page, setPage }) {
   display: capturing ? "none" : "flex",
   flexDirection: "row",
   gap: "20px",
-   ...panelStyle, // 👈 THIS gives it the nice background
+   ...panelStyle,
   padding: "0",
 }}> 
 
@@ -544,15 +596,14 @@ function PageButton({ pageKey, emoji, page, setPage }) {
     borderRadius: "16px 0 0 16px",
   }}>
     {[
-      { key: "body", label: "🧍" },
-      { key: "ears", label: "👂" },
-      { key: "eyes", label: "👀" },
-      { key: "wings", label: "🪽" },
-      { key: "hat", label: "🎩" },
-      { key: "tail", label: "🐾" },
-    ].map(tab => {
+  { key: "body",  icon: "/assets/panel/body.PNG" },
+  { key: "ears",  icon: "/assets/panel/ears.PNG" },
+  { key: "eyes",  icon: "/assets/panel/eyes.PNG" },
+  { key: "wings", icon: "/assets/panel/wings.PNG" },
+  { key: "hat",   icon: "/assets/panel/hat.PNG" },
+  { key: "tail",  icon: "/assets/panel/tail.PNG" },
+].map(tab => {
       const active = page === tab.key;
-
       return (
         <div
           key={tab.key}
@@ -578,12 +629,28 @@ function PageButton({ pageKey, emoji, page, setPage }) {
             transition: "0.2s",
           }}
         >
-          {tab.label}
+          <img
+  src={tab.icon}
+  alt={tab.key}
+  style={{
+    width: isMobile ? "28px" : "32px",
+    height: isMobile ? "28px" : "32px",
+    objectFit: "cover",
+    pointerEvents: "none",
+  }}
+/>
         </div>
       );
     })}
-  </div> 
+  </div > 
+  
+ <div
+  style={{
+    paddingRight: "20px",   
+  }}
+>
   {renderPage()}
+</div>
       </div>
     </div>
     </div> 
@@ -598,7 +665,7 @@ const panelStyle = {
 };
 
 const labelStyle = {
-  margin: "12px 0 12px",  // 👈 add top margin
+  margin: "12px 0 12px",  
   fontSize: "25px",
   fontWeight: 700,
   color: "#a0c4ff",
