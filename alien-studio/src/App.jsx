@@ -96,6 +96,7 @@ export default function App() {
       gridTemplateColumns: "repeat(4, 1fr)",
       gap: "8px",
     }}>
+      
       {Object.entries(partObj).map(([key, src], i) => {
         const selected = selector.idx === i;
 
@@ -146,6 +147,7 @@ export default function App() {
         );
       })}
     </div>
+    
   );
 }
 
@@ -527,16 +529,17 @@ function PageButton({ pageKey, emoji, page, setPage }) {
         <div style={{
   display: capturing ? "none" : "flex",
   flexDirection: "row",
-  gap: "0px",
+  gap: "20px",
    ...panelStyle, // 👈 THIS gives it the nice background
   padding: "0",
-}}>
+}}> 
+
 {/* SIDE TABS */}
   <div style={{
     display: "flex",
     flexDirection: "column",
     gap: "10px",
-    padding: "10px 6px",
+    padding: "10px 10px",
     background: "rgba(80,100,200,0.25)",
     borderRadius: "16px 0 0 16px",
   }}>
@@ -595,7 +598,7 @@ const panelStyle = {
 };
 
 const labelStyle = {
-  margin: "0 0 8px",
+  margin: "12px 0 12px",  // 👈 add top margin
   fontSize: "25px",
   fontWeight: 700,
   color: "#a0c4ff",
